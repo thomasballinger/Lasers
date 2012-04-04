@@ -153,7 +153,16 @@ BoardDisplay.prototype = {
             var y = Math.floor((box.y + box.height/2)/self.tileHeight);
             end = {row:y,column:x};
             // drag on server and emit updated gamestate to all clients when a moveable tile is dragged
-            self.socket.emit('drag', {start:this.dragStart,end:end});
+            console.log(this.dragStart)
+            console.log(end)
+            if (Math.abs(this.originalPosition[0] - box.x) + 
+                    Math.abs(this.originalPosition[1] - box.y) < 10){
+                console.log('emitting rotate because equal');
+                self.socket.emit('rotate', {row:y,column:x});
+            } else {
+                console.log('emitting drag');
+                self.socket.emit('drag', {start:this.dragStart,end:end});
+            }
             this.ox=0;
             this.oy=0;
         }
@@ -171,6 +180,7 @@ BoardDisplay.prototype = {
                 var box = this.getBBox(true);
                 var x = Math.floor((box.x + box.width/2) / self.tileWidth);
                 var y = Math.floor((box.y + box.height/2) / self.tileHeight);
+                console.log('emitting rotate');
                 self.socket.emit('rotate', {row:y,column:x});
             });
             // make all moveable tiles draggable
